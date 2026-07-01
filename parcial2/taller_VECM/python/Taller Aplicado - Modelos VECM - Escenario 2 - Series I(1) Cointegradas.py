@@ -1,5 +1,5 @@
 # Taller Aplicado - Modelos VECM
-# Escenario 1: Series I(1) No Cointegradas
+# Escenario 2: Series I(1) Cointegradas
 
 # Nota: Tips practicos en Python
 ## Para limpiar el entorno en IPython/Jupyter se puede correr: "%reset -f"
@@ -23,7 +23,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from statsmodels.tsa.api import VAR
 from statsmodels.tsa.stattools import adfuller
-from statsmodels.tsa.vector_ar.vecm import coint_johansen
+from statsmodels.tsa.vector_ar.vecm import VECM, coint_johansen
 
 # Define el directorio de trabajo sobre el cual va a trabajar
 project_path = Path(
@@ -33,35 +33,35 @@ os.chdir(project_path)
 
 from funciones_auxiliares_VECM import (
     configurar_entorno_graficas,
+    extraer_matrices_vecm,
+    graficar_grilla_irf,
+    graficar_pronostico_vecm,
     graficar_ts,
     imprimir_adf,
+    imprimir_matrices_var_reparametrizado,
     imprimir_seleccion_rezagos,
     imprimir_tabla_johansen,
     mostrar_graficas,
+    predecir_vecm,
     prueba_arch_por_ecuacion,
     prueba_normalidad_por_ecuacion,
-)
-from funciones_auxiliares_graficacion_VAR import (
-    graficar_grilla_irf as graficar_grilla_irf_var,
-    graficar_pronostico_var,
-    predecir_var,
 )
 
 # Para configurar las caracteristicas de las graficas
 configurar_entorno_graficas(max_columns=30)
 
 # Importe la base de datos desde Excel
-datos_escenario1 = pd.read_excel("")
+datos_escenario2 = pd.read_excel("")
 
 
-# %% 1. Escenario 1: Series I(1)  -----------------------------------------------------------
+# %% 1. Escenario 2: Series I(1)  -----------------------------------------------------------
 
 
-# %% 1.1 Escenario 1: Exploracion previa de las series de tiempo, antes de realizar el modelamiento -----------------------------------------------------------
+# %% 1.1 Escenario 2: Exploracion previa de las series de tiempo, antes de realizar el modelamiento -----------------------------------------------------------
 
 # Inspeccione sus datos
- .info()
-print( .head())
+.info()
+print(.head())
 
 # Transforme la base de datos que importo en un objeto de serie de tiempo
 # de pandas, usando un indice temporal trimestral.
@@ -71,7 +71,7 @@ tiempo = pd.period_range(
     freq="",
     name="tiempo",
 )
-series_escenario1 = pd.DataFrame(
+series_escenario2 = pd.DataFrame(
     .to_numpy(),
     index=tiempo,
     columns= .columns,
@@ -108,7 +108,7 @@ adf2 = adfuller(
 imprimir_adf(adf2, .columns[1])
 
 
-# %% 1.2 Escenario 1: Identificacion del numero de rezagos apropiado p del VAR(p) y de su reparametrizacion VECM(p-1) -----------------------
+# %% 1.2 Escenario 2: Identificacion del numero de rezagos apropiado p del VAR(p) y de su reparametrizacion VECM(p-1) -----------------------
 
 # Nombre de las series de tiempo individuales
 variables = list(.columns)
@@ -118,24 +118,24 @@ variables = list(.columns)
 # graficas y tablas.
 Y_modelo = .reset_index(drop=True)
 
-# %% 1.2.1 Escenario 1: Identificacion del numero de rezagos apropiado p del VAR(p) ----
+# %% 1.2.1 Escenario 2: Identificacion del numero de rezagos apropiado p del VAR(p) ----
 
 # Creación del objeto de tipo statsmodels.tsa.vector_ar.var_model.VAR 
-modelo_var_escenario1 = VAR()
+modelo_var_escenario2 = VAR()
 
 # Seleccion de rezagos para un VAR
-seleccion_rezagos_escenario1 = .select_order(
+seleccion_rezagos_escenario2 = .select_order(
     maxlags=6,
     trend="n",
 )
 imprimir_seleccion_rezagos(
-    seleccion_rezagos_escenario1,
+    seleccion_rezagos_escenario2,
     "Seleccion de rezagos para un VAR sin terminos deterministas",
     incluir_rezago_cero=False,
 )
 
 
-# %% 1.2.2 Escenario 1: Estimacion del modelo VAR ----
+# %% 1.2.2 Escenario 2: Estimacion del modelo VAR ----
 
 
 # Nota: La razon por la que se estima el modelo VAR(p), se debe a que sus errores,
@@ -145,18 +145,18 @@ imprimir_seleccion_rezagos(
 #       reparametrizacion en forma de un VECM(p-1), por lo que si los residuales
 #       del modelo VAR que se estimara satisfacen los supuestos del modelo,
 #       entonces los residuales del VECM(p-1) tambien lo haran.
-VAR_estimado1 = .fit(2, trend="n")
+VAR_estimado2 = .fit(2, trend="n")
 
 # Resumen completo de los resultados de la estimacion del VAR
 print(.summary())
 
 
-# %% 1.2.3 Escenario 1: Validacion de supuestos del modelo ----
+# %% 1.2.3 Escenario 2: Validacion de supuestos del modelo ----
 
 
-residuales_VAR_estimado1 = pd.DataFrame(
-    np.asarray( .resid),
-    index=series_escenario1.index[ .k_ar :],
+residuales_VAR_estimado2 = pd.DataFrame(
+    np.asarray(.resid),
+    index=series_escenario2.index[ .k_ar :],
     columns=variables,
 )
 
@@ -165,23 +165,23 @@ P_10 = .test_whiteness(nlags=10, adjusted=False)
 print(P_10.summary())
 
 # Test de heterocedasticidad
-arch_VAR_estimado1 = prueba_arch_por_ecuacion(
-    residuales_VAR_estimado1,
+arch_VAR_estimado2 = prueba_arch_por_ecuacion(
+    residuales_VAR_estimado2,
     lags=12,
     variables=variables,
 )
 
 # Test de normalidad (Jarque-Bera para series multivariadas)
-normalidad_VAR_estimado1 = .test_normality()
-print(normalidad_VAR_estimado1.summary())
+normalidad_VAR_estimado2 = .test_normality()
+print(normalidad_VAR_estimado2.summary())
 
-normalidad_univariada_VAR_estimado1 = prueba_normalidad_por_ecuacion(
-    residuales_VAR_estimado1,
+normalidad_univariada_VAR_estimado2 = prueba_normalidad_por_ecuacion(
+    residuales_VAR_estimado2,
     variables=variables,
 )
 
 
-# %% 1.2.4 Escenario 1: Realizacion del Test de Johansen, para determinar el rango de la matriz Pi ----
+# %% 1.2.4 Escenario 2: Realizacion del Test de Johansen, para determinar el rango de la matriz Pi ----
 
 
 # En statsmodels se usa k_ar_diff = p - 1, donde p es el numero de rezagos del
@@ -210,70 +210,98 @@ tabla_traza = imprimir_tabla_johansen(
 )
 
 
-# %% 1.2.5 Escenario 1: Dado que las series son I(1) y no estan cointegradas, se estima un modelo VAR(1) en diferencias ----
+# %% 1.2.5 Escenario 2: Dado que las series son I(1) y estan cointegradas, se estima un modelo VECM(1) ----
 
-# Estimacion del modelo VAR(1) en diferencias
-diff_series_escenario1 = .diff().dropna()
+# Creación del objeto de tipo statsmodels.tsa.vector_ar.vecm.VECM
+# 
+# Se especifica el parámetro coint_rank=1 de acuerdo con el resultado del test de
+# Johansen.
+VECM_escenario2 = VECM(
+    ,
+    k_ar_diff=k_ar_diff,
+    coint_rank= ,
+    deterministic="n",
+)
 
-modelo_var_diff_escenario1 = VAR(diff_series_escenario1.reset_index(drop=True))
-VAR_diff_estimado1 = modelo_var_diff_escenario1.fit(1, trend="n")
-
-# Resumen completo de los resultados de la estimacion del VAR(1) en diferencias
+# Estimación del modelo VEC 
+VECM_escenario2_fit = .fit()
 print(.summary())
 
-# Validacion de supuestos del modelo VAR(1) en diferencias
-residuales_VAR_diff_estimado1 = pd.DataFrame(
+# Vector de cointegracion normalizado
+matrices_vecm_escenario2 = extraer_matrices_vecm(
+    ,
+    variables=variables,
+)
+print("\nVector de cointegracion normalizado (beta):")
+print( ["beta"])
+
+# Coeficientes de velocidad de ajuste
+print("\nCoeficientes de velocidad de ajuste (alpha):")
+print( ["alpha"])
+
+
+# %% 1.2.6 Escenario 2: Reparametrizacion del VECM como un VAR en niveles ----
+
+# Para la reparametrizacion del VECM(1) en un VAR(2) en niveles, statsmodels
+# guarda la representacion directamente en el resultado estimado del VECM.
+matrices_var_reparametrizado_escenario2 = imprimir_matrices_var_reparametrizado(
+    ,
+    variables=variables,
+)
+
+# Validacion de supuestos del modelo VAR(2) reparametrizado
+residuales_VECM_escenario2 = pd.DataFrame(
     np.asarray( .resid),
-    index=diff_series_escenario1.index[ .k_ar :],
+    index=series_escenario2.index[ .k_ar :],
     columns=variables,
 )
 
 # Test de no correlacion serial
-P_10_diff = .test_whiteness(nlags=10, adjusted=False)
-print(P_10_diff.summary())
+P_10_VECM = .test_whiteness(nlags=10)
+print(P_10_VECM.summary())
 
 # Test de heterocedasticidad
-arch_VAR_diff_estimado1 = prueba_arch_por_ecuacion(
-    residuales_VAR_diff_estimado1,
+arch_VECM_escenario2 = prueba_arch_por_ecuacion(
+    residuales_VECM_escenario2,
     lags=12,
     variables=variables,
 )
 
 # Test de normalidad (Jarque-Bera para series multivariadas)
-normalidad_VAR_diff_estimado1 = .test_normality()
-print(normalidad_VAR_diff_estimado1.summary())
+normalidad_VECM_escenario2 = .test_normality()
+print(normalidad_VECM_escenario2.summary())
 
-normalidad_univariada_VAR_diff_estimado1 = prueba_normalidad_por_ecuacion(
-    residuales_VAR_diff_estimado1,
+normalidad_univariada_VECM_escenario2 = prueba_normalidad_por_ecuacion(
+    residuales_VECM_escenario2,
     variables=variables,
 )
 
 
-# %% 1.2.6 Escenario 1: Pronosticos del modelo VAR(1) en diferencias ----
+# %% 1.2.7 Escenario 2: Pronosticos del modelo VAR(2) reparametrizado ----
 
 
 # Pronóstico
-pronosticos_escenarios1 = predecir_var(
+pronosticos_escenarios2 = predecir_vecm(
     ,
     n_ahead=,
     ci=0.95,
-    indice=diff_series_escenario1.index,
+    indice=series_escenario2.index,
     variables=variables,
 )
-print(pronosticos_escenarios1)
+print(pronosticos_escenarios2)
 
 # Gráfica del pronóstico
-fig_pronostico, axes_pronostico = graficar_pronostico_var(
-    pronosticos_escenarios1["pronostico"],
-    pronosticos_escenarios1["inferior"],
-    pronosticos_escenarios1["superior"],
+fig_pronostico, axes_pronostico = graficar_pronostico_vecm(
+    pronosticos_escenarios2["pronostico"],
+    pronosticos_escenarios2["inferior"],
+    pronosticos_escenarios2["superior"],
 )
-fig_pronostico.suptitle("Pronostico VAR(1) en diferencias", fontsize=11)
+fig_pronostico.suptitle("Pronostico VECM reparametrizado", fontsize=11)
 fig_pronostico.tight_layout()
 mostrar_graficas()
 
 
-# %% 1.2.7 Escenario 1: Funciones Impulso Respuesta (IRF) ----
+# %% 1.2.8 Escenario 2: Funciones Impulso Respuesta (IRF) ----
 
 # Matrices asociadas a las funciones impulso respuesta
 matrices_phi = .irf().irfs
@@ -298,8 +326,8 @@ repeticiones_bootstrap_irf = 100 # Bootstrappings empleados para construir los I
 # IRF No Ortogonalizadas.
 
 # IRF de las variables del sistema ante distintos choques exogenos.
-irf_no_ortog = graficar_grilla_irf_var(
-    VAR_diff_estimado1,
+irf_no_ortog = graficar_grilla_irf(
+    VECM_escenario2_fit,
     variables_irf,
     pasos_adelante,
     ortog=False,
@@ -314,8 +342,8 @@ mostrar_graficas()
 
 # IRF Ortogonalizadas.
 
-irf_ortog = graficar_grilla_irf_var(
-    VAR_diff_estimado1,
+irf_ortog = graficar_grilla_irf(
+    VECM_escenario2_fit,
     variables_irf,
     pasos_adelante,
     ortog=True,

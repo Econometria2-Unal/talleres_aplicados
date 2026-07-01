@@ -102,11 +102,11 @@ normality.test( )
 
 
 # Criterio del valor propio máximo
-test_valor_propio_maximo = ca.jo( , ecdet = , type = "eigen", K = 2, spec = "transitory")
+test_valor_propio_maximo = ca.jo( , ecdet = , type = "eigen", K = , spec = "transitory")
 summary(test_valor_propio_maximo) 
 
 # Criterio de la traza 
-test_traza = ca.jo( , ecdet = , type = "trace", K = 2, spec = "transitory")
+test_traza = ca.jo( , ecdet = , type = "trace", K = , spec = "transitory")
 summary(test_traza) 
 
 # 1.2.5 Escenario 1: Dado que las series son I(1) y no están cointegradas, se estima un modelo VAR(1) en diferencias ----

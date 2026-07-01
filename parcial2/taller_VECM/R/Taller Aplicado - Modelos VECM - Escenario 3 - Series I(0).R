@@ -34,7 +34,7 @@ source("funciones_auxiliares_VECM.R", encoding = "UTF-8")
 datos_escenario3 = read_xlsx("")
 
 
-# 1. Escenario 3: Series I(1)  -----------------------------------------------------------
+# 1. Escenario 3: Series I(0)  -----------------------------------------------------------
 
 
 # 1.1 Escenario 3: Exploración previa de las series de tiempo, antes de realizar el modelamiento -----------------------------------------------------------
@@ -120,7 +120,7 @@ serial.test(, lags.pt = 10, type = "PT.asymptotic"); P.10
 arch.test(, lags.multi = 12, multivariate.only = TRUE) 
 normality.test() 
 
-# 1.2.6 Escenario 3: Pronósticos del modelo VAR(1) en diferencias ----
+# 1.2.6 Escenario 3: Pronósticos del modelo VAR(2) en niveles ----
 
 
 pronosticos_escenarios3 = predict(, n.ahead=, boots = T); pronosticos_escenarios3
@@ -130,10 +130,10 @@ x11(); plot(pronosticos_escenarios3)
 # 1.2.7 Escenario 3: Funciones Impulso Respuesta (IRF) ----
 
 # Matrices asociadas a las funciones impulso respuesta
-Phi(VAR_estimado3, nstep=10)
+Phi(, nstep=)
 
 # Matrices asociadas a las funciones impulso respuesta ortogonalizadas
-Psi(VAR_estimado3, nstep=10)
+Psi(, nstep=)
 
 # Parametros de las graficas de las IRFs
 variables_irf = c("x", "y")
