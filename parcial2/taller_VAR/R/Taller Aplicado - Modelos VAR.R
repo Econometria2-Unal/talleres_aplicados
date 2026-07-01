@@ -24,6 +24,9 @@ library(gridExtra)
 # Define el directorio de trabajo sobre el cuál va a trabajar 
 setwd("")
 
+# Cargue las funciones auxiliares para graficar las IRF
+source("funciones_auxiliares_graficacion_VAR.R", encoding = "UTF-8")
+
 # Importe la base de datos desde Excel 
 datos = read_xlsx("")
 
@@ -121,8 +124,11 @@ normality.test()
 # 2.4.1 Pronóstico ----
 
 
-x11()
+# Pronóstico
 predict(, n.ahead = , ci = 0.95) 
+
+# Gráfica del pronóstico
+x11()
 autoplot(predict(, n.ahead = , ci = 0.95)) 
 
 
@@ -132,10 +138,7 @@ autoplot(predict(, n.ahead = , ci = 0.95))
 Phi(, nstep=)
 
 # Matrices asociadas a las funciones impulso respuesta ortogonalizadas
-Phi(, nstep=)
-
-# Cargue las funciones auxiliares para graficar las IRF
-source("funciones_auxiliares_graficacion_VAR.R", encoding = "UTF-8")
+Psi(, nstep=)
 
 # Parametros de las graficas de las IRF
 variables = colnames(series)
