@@ -1,11 +1,11 @@
 # Taller Aplicado - Modelos VAR
 
+# Nota: Tips practicos en R
+## Para limpiar el entorno de trabajo se puede correr: rm(list = ls())
+## Para cerrar todas las graficas actualmente abiertas se puede correr: dev.off()
+## Para resetear R se puede usar las teclas: Ctrl + Shift + F10
 
 # 0. Preliminares ---- ----------------------------------------------------
-
-
-# Limpie el entorno de trabajo 
-rm(list = ls())
 
 # Paquetes requeridos 
 
@@ -30,6 +30,8 @@ datos = read_xlsx("")
 
 # 1. Exploración previa de las series de tiempo, antes de realizar el modelamiento -----------------------------------------------------------
 
+
+# Ahora bien, asuma lo siguiente que la variable "y" es la "variable más exógena" de las dos variables que se van a modelar, es decir: 
 
 ## 1) Un shock en "y" afecta de manera inmediata/contemporánea (es decir, desde el periodo t que ocurre el shock) tanto a "x" como a sí mismo ("y"). 
 ## 2) Mientras que un shock en "x" únicamente afecta de manera inmediata/contemporánea (es decir, desde el periodo t que ocurre el shock) a sí mismo ("x")
@@ -126,69 +128,62 @@ autoplot(predict(, n.ahead = , ci = 0.95))
 
 # 2.4.2 Funciones Impulso Respuesta (IRF) ----
 
-
-# Número de pasos adelante
-pasos_adelante = 0:
-
-# Función que me permite calcular y graficar las funciones impulso respuesta (NOTA: POR NADA DEL MUNDO MODIFIQUE ESTA FUNCIÓN!!!)
-# A cada función impulso respuesta le asigno una gráfica
-impulso_respuesta = function(var, impulso, respuesta, pasos_adelante, ortog, 
-                             int_conf, titulo){
-  
-  "Calcula las funciones impulso respuesta ortogonalizadas y no ortogonalizadas 
-  y devuelve una grafíca IRF o OIRF dependiendo la especificación"
-  
-  # Cáclulo de la función impulso respuesta
-  total_pasos_futuros = length(pasos_adelante) - 1
-  IRF = irf(var, impulse=impulso, response=respuesta, n.ahead = total_pasos_futuros, 
-            ortho=ortog, ci = int_conf)
-  IRF_data_frame = data.frame(IRF$irf,IRF$Lower,IRF$Upper, pasos_adelante)
-  # Gráfica de la función impulso respuesta
-  graph = IRF_data_frame %>% 
-    ggplot(aes(x=IRF_data_frame[,4], y=IRF_data_frame[,1], ymin=IRF_data_frame[,2], 
-               ymax=IRF_data_frame[,3] )) +
-    geom_hline(yintercept = 0, color="red") +
-    geom_ribbon(fill="grey", alpha=0.2) +
-    geom_line() +
-    theme_light() +
-    ggtitle(titulo)+
-    ylab("")+
-    xlab("Pasos adelante") +
-    theme(plot.title = element_text(size = 11, hjust=0.5),
-          axis.title.y = element_text(size=11))    
-  return(graph)
-}
-
-# IRF de las variables del sistema ante distintos choques exógenos.
-
-x.x = impulso_respuesta(VAR_estimado, "x", "x", pasos_adelante, ortog = F,
-                        int_conf = 0.95, titulo = "Impulso de x - respuesta de x")
-x.y = impulso_respuesta(VAR_estimado, "x", "y", pasos_adelante, ortog = F,
-                        int_conf = 0.95, titulo = "Impulso de x - respuesta de y")
-y.x = impulso_respuesta(VAR_estimado, "y", "x", pasos_adelante, ortog = F,
-                        int_conf = 0.95, titulo = "Impulso de y - respuesta de x")
-y.y = impulso_respuesta(VAR_estimado, "y", "y", pasos_adelante, ortog = F, 
-                        int_conf = 0.95, titulo = "Impulso de y - respuesta de y")
-
-x11()
-grid.arrange(x.x, x.y, y.x, y.y,ncol=2)
-
-# IRF Ortogonalizadas. 
-
-x.x = impulso_respuesta(VAR_estimado, "x", "x", pasos_adelante, ortog = T,
-                        int_conf = 0.95, titulo = "Impulso de x - respuesta de x")
-x.y = impulso_respuesta(VAR_estimado, "x", "y", pasos_adelante, ortog = T,
-                        int_conf = 0.95, titulo = "Impulso de x - respuesta de y")
-y.x = impulso_respuesta(VAR_estimado, "y", "x", pasos_adelante, ortog = T,
-                        int_conf = 0.95, titulo = "Impulso de y - respuesta de x")
-y.y = impulso_respuesta(VAR_estimado, "y", "y", pasos_adelante, ortog = T, 
-                        int_conf = 0.95, titulo = "Impulso de y - respuesta de y")
-
-x11()
-grid.arrange(x.x, x.y, y.x, y.y,ncol=2)
-
 # Matrices asociadas a las funciones impulso respuesta 
-Phi(VAR_estimador, nstep=10)
+Phi(, nstep=)
 
 # Matrices asociadas a las funciones impulso respuesta ortogonalizadas
-Phi(VAR_estimado, nstep=10)
+Phi(, nstep=)
+
+# Cargue las funciones auxiliares para graficar las IRF
+source("funciones_auxiliares_graficacion_VAR.R", encoding = "UTF-8")
+
+# Parametros de las graficas de las IRF
+variables = colnames(series)
+pasos_adelante = 0:
+int_conf_irf = 0.95
+semilla_irf = 202601
+repeticiones_bootstrap_irf = 100 # Bootstrappings empleados para construir los IC de las IRF
+
+# La funcion graficar_grilla_irf() calcula el objeto irf() una sola vez
+# y luego crea cada panel con programacion funcional.
+
+# Graficacion de las IRF no ortogonalizadas
+
+# IRF de las variables del sistema ante distintos choques exogenos.
+irf_no_ortog = graficar_grilla_irf(
+  VAR_estimado,
+  variables,
+  pasos_adelante,
+  ortog = FALSE,
+  int_conf = int_conf_irf,
+  prefijo_titulo = "Impulso",
+  semilla = semilla_irf,
+  runs = repeticiones_bootstrap_irf
+)
+
+x11()
+# Grilla de IRF: columnas = impulsos; filas = respuestas.
+grid.arrange(grobs = irf_no_ortog$graficas,
+             layout_matrix = matrix(seq_along(irf_no_ortog$graficas),
+                                    nrow = length(variables), byrow = TRUE))
+
+# Graficacion de las IRF ortogonalizadas
+
+# Usamos los mismos pasos adelante, intervalo de confianza y semilla.
+# IRF ortogonalizadas de las variables del sistema ante distintos choques exogenos.
+irf_ortog = graficar_grilla_irf(
+  VAR_estimado,
+  variables,
+  pasos_adelante,
+  ortog = TRUE,
+  int_conf = int_conf_irf,
+  prefijo_titulo = "Impulso ortogonal",
+  semilla = semilla_irf,
+  runs = repeticiones_bootstrap_irf
+)
+
+x11()
+# Grilla de OIRF: columnas = impulsos; filas = respuestas.
+grid.arrange(grobs = irf_ortog$graficas,
+             layout_matrix = matrix(seq_along(irf_ortog$graficas),
+                                    nrow = length(variables), byrow = TRUE))
