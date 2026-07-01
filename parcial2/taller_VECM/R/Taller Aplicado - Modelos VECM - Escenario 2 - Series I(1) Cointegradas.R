@@ -43,7 +43,7 @@ datos_escenario2 = read_xlsx("")
 glimpse()
 
 # Transforme la base de datos que importó en un objeto de serie de tiempo "ts"
-series_esecenario2 = ts(, start=c(,), frequency=4)
+series_esecenario2 = ts(, start=c(,), frequency=)
 
 # Grafique las series de tiempo
 y_plot = autoplot(, size=1,ts.colour="lightblue", 

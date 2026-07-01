@@ -29,9 +29,7 @@ from statsmodels.tsa.stattools import adfuller
 
 # Define el directorio de trabajo sobre el cual va a trabajar
 project_path = Path(r"")
-
 os.chdir(project_path)
-directorio_raiz = os.getcwd()
 
 ## Librerias que complementan la libreria de graficacion matplotlib
 ## (Se usan en la graficacion de las IRF)
@@ -124,14 +122,17 @@ imprimir_adf(adf2, .columns[1])
 
 # %% 2. Metodologia Box-Jenkins para series multivariadas -----------------------
 
-
-# %% 2.1 Identificacion del modelo ----
-
+# Nombre de las series de tiempo individuales
+variables = list(.columns)
 
 # Para crear el objeto VAR con statsmodels quitamos el indice temporal y
 # dejamos solo los datos. El indice trimestral se conserva en series para
 # graficas y tablas.
-series_modelo = series.reset_index(drop=True)
+series_modelo = .reset_index(drop=True)
+
+# %% 2.1 Identificacion del modelo ----
+
+# Creación del objeto de tipo statsmodels.tsa.vector_ar.var_model.VAR 
 modelo_var = VAR()
 
 # Seleccion de rezagos para un VAR
@@ -171,7 +172,6 @@ Bcoef_VAR_estimado = .params.T
 print(Bcoef_VAR_estimado)
 
 ## Para visualizar solo los coeficientes asosicados a los rezagos del modelo VAR
-variables = list(series.columns)
 imprimir_matrices_acof( , variables)
 
 # Resumen completo de los resultados de la estimacion del VAR

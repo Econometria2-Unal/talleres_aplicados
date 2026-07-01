@@ -25,13 +25,13 @@ library(ggfortify)
 library(gridExtra)
 
 # Define el directorio de trabajo sobre el cuál va a trabajar 
-setwd("C:/Users/gcrp9/Documents/Unal/Academic/Profesor/Econometria II/Becas_asistente_docente/Recursos/talleres_aplicados/parcial2/taller_VECM/R")
+setwd("")
 
 # Importacion de funciones auxiliares para las graficas
 source("funciones_auxiliares_VECM.R", encoding = "UTF-8")
 
 # Importe la base de datos desde Excel 
-datos_escenario1 = read_xlsx("datos_escenario1_I(1)_no_cointegradas.xlsx")
+datos_escenario1 = read_xlsx("")
 
 
 # 1. Escenario 1: Series I(1)  -----------------------------------------------------------
@@ -40,16 +40,16 @@ datos_escenario1 = read_xlsx("datos_escenario1_I(1)_no_cointegradas.xlsx")
 # 1.1 Escenario 1: Exploración previa de las series de tiempo, antes de realizar el modelamiento -----------------------------------------------------------
 
 # Inspeccione sus datos
-glimpse(datos_escenario1)
+glimpse()
 
 # Transforme la base de datos que importó en un objeto de serie de tiempo "ts"
-series_esecenario1 = ts(datos_escenario1, start=c(1900,1), frequency=4)
+series_esecenario1 = ts(, start=c(,), frequency=)
 
 # Grafique las series de tiempo
-y_plot = autoplot(series_esecenario1[,1], size=1,ts.colour="lightblue", 
+y_plot = autoplot( , size=1,ts.colour="lightblue", 
                   xlab="",ylab="", main="Variable y")
 
-x_plot = autoplot(series_esecenario1[,2], size=1,ts.colour="royalblue", 
+x_plot = autoplot( , size=1,ts.colour="royalblue", 
                   xlab="",ylab="", main="Variable x")
 
 x11();grid.arrange(y_plot, x_plot,ncol=2)
@@ -58,10 +58,10 @@ x11();grid.arrange(y_plot, x_plot,ncol=2)
 # Para los parámetros de la prueba de Dickey-FUller, use las siguientes especificaciones: " lags=3, selectlags = "AIC",type="none" "
 
 ## Prueba de ADF para la priemra serie de tiempo
-adf1= ur.df(series_esecenario1[,1], lags=3, selectlags = "AIC",type="none")
+adf1= ur.df( , lags=3, selectlags = "AIC",type="none")
 summary(adf1) 
 
-adf2= ur.df(, lags=3,selectlags = "AIC",type="none")
+adf2= ur.df( , lags=3,selectlags = "AIC",type="none")
 summary(adf2) 
 
 
@@ -71,7 +71,7 @@ summary(adf2)
 
 
 # Selección de rezagos para un VAR
-VARselect(series_esecenario1, lag.max=6,type = "none", season = NULL)
+VARselect(, lag.max=6,type = "none", season = NULL)
 
 
 # 1.2.2 Escenario 1: Estimación del modelo VAR ----
@@ -81,70 +81,70 @@ VARselect(series_esecenario1, lag.max=6,type = "none", season = NULL)
 #       Independientemente de si las series del VAR son I(0) o I(1)
 #       Los errores del VAR(p) serán exactamente los mismos que los de su reparametrización en forma de un VECM(p-1), por lo que si los residuales
 #       del modelo VAR que se estimará satisfacen los supuestos del modelo, entonces los residuales del VECM(p-1) también lo harán. 
-VAR_estimado1 =  VAR(series_esecenario1, p=2, type="none", season=NULL)  
+VAR_estimado1 =  VAR(, p=2, type="none", season=NULL)  
 
 # Resumen completo de los resultados de la estimación del VAR
-summary(VAR_estimado1)
+summary()
 
 # 1.2.3 Escenario 1: Validación de supuestos del modelo ----
 
 
 # Test de no correlación serial 
-P.10=serial.test(VAR_estimado1, lags.pt = 10, type = "PT.asymptotic"); P.10 
+P.10=serial.test( , lags.pt = 10, type = "PT.asymptotic"); P.10 
 
 # Test de heterocedasticidad
-arch.test(VAR_estimado1, lags.multi = 12, multivariate.only = TRUE) 
+arch.test( , lags.multi = 12, multivariate.only = TRUE) 
 
 # Test de normalidad (Jarque-Bera para series multivariadas)
-normality.test(VAR_estimado1) 
+normality.test( ) 
 
 # 1.2.4 Escenario 1: Realización del Test de Johansen, para determinar el rango de la matriz Pi ----
 
 
 # Criterio del valor propio máximo
-test_valor_propio_maximo = ca.jo(series_esecenario1, ecdet = , type = "eigen", K = 2, spec = "transitory")
+test_valor_propio_maximo = ca.jo( , ecdet = , type = "eigen", K = 2, spec = "transitory")
 summary(test_valor_propio_maximo) 
 
 # Criterio de la traza 
-test_traza = ca.jo(series_esecenario1, ecdet = , type = "trace", K = 2, spec = "transitory")
+test_traza = ca.jo( , ecdet = , type = "trace", K = 2, spec = "transitory")
 summary(test_traza) 
 
 # 1.2.5 Escenario 1: Dado que las series son I(1) y no están cointegradas, se estima un modelo VAR(1) en diferencias ----
 
 # Estimación del modelo VAR(1) en diferencias
-VAR_diff_estimado1 = VAR(diff(series_esecenario1), p=1, type="none", season=NULL)  
+VAR_diff_estimado1 = VAR(diff(), p=1, type="none", season=NULL)  
 
 # Resumen completo de los resultados de la estimación del VAR(1) en diferencias
-summary(VAR_diff_estimado1)
+summary()
 
 # Validación de supuestos del modelo VAR(1) en diferencias
 
 # Test de no correlación serial 
-P.10=serial.test(VAR_diff_estimado1, lags.pt = 10, type = "PT.asymptotic"); P.10 
+P.10=serial.test(, lags.pt = 10, type = "PT.asymptotic"); P.10 
 
 # Test de heterocedasticidad
-arch.test(VAR_diff_estimado1, lags.multi = 12, multivariate.only = TRUE) 
+arch.test(, lags.multi = 12, multivariate.only = TRUE) 
 
 # Test de normalidad (Jarque-Bera para series multivariadas)
-normality.test(VAR_diff_estimado1) 
+normality.test() 
 
 # 1.2.6 Escenario 1: Pronósticos del modelo VAR(1) en diferencias ----
 
 
-pronosticos_escenarios1 = predict(VAR_diff_estimado1, n.ahead=12, boots = T); pronosticos_escenarios1
+pronosticos_escenarios1 = predict(, n.ahead=, boots = T); pronosticos_escenarios1
 x11(); plot(pronosticos_escenarios1)
 
 # 1.2.7 Escenario 1: Funciones Impulso Respuesta (IRF) ----
 
 # Matrices asociadas a las funciones impulso respuesta
-Phi(VAR_diff_estimado1, nstep=10)
+Phi(, nstep=)
 
 # Matrices asociadas a las funciones impulso respuesta ortogonalizadas
-Psi(VAR_diff_estimado1, nstep=10)
+Psi(, nstep=)
 
 # Parametros de las graficas de las IRFs
 variables_irf = c("x", "y")
-pasos_adelante = 0:24
+pasos_adelante = 0:
 int_conf_irf = 0.95
 semilla_irf = 202601
 repeticiones_bootstrap_irf = 100 # Bootstrappings empleados para construir los IC de las IRFs

@@ -43,7 +43,7 @@ datos_escenario3 = read_xlsx("")
 glimpse()
 
 # Transforme la base de datos que importó en un objeto de serie de tiempo "ts"
-series_esecenario3 = ts(, start=c(,), frequency=4)
+series_esecenario3 = ts(, start=c(,), frequency=)
 
 # Grafique las series de tiempo
 y_plot = autoplot(, size=1,ts.colour="lightblue", 
@@ -123,7 +123,7 @@ normality.test()
 # 1.2.6 Escenario 3: Pronósticos del modelo VAR(1) en diferencias ----
 
 
-pronosticos_escenarios3 = predict(, n.ahead=12, boots = T); pronosticos_escenarios3
+pronosticos_escenarios3 = predict(, n.ahead=, boots = T); pronosticos_escenarios3
 x11(); plot(pronosticos_escenarios3)
 
 
