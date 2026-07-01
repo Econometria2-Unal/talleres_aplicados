@@ -114,11 +114,11 @@ mostrar_graficas()
 # Para los parametros de la prueba de Dickey-Fuller, use las siguientes especificaciones: " maxlag=3, autolag='AIC', regression='n' "
 
 ## Prueba de ADF para la priemra serie de tiempo
-adf1 = adfuller(.iloc[:, 0], maxlag=3, autolag="AIC", regression="n")
+adf1 = adfuller( .iloc[:, 0], maxlag=3, autolag="AIC", regression="n")
 imprimir_adf(adf1, .columns[0]) 
 
 ## Prueba de ADF para la segunda serie de tiempo
-adf2 = adfuller(.iloc[:, 1], maxlag=3, autolag="AIC", regression="n")
+adf2 = adfuller( .iloc[:, 1], maxlag=3, autolag="AIC", regression="n")
 imprimir_adf(adf2, .columns[1]) 
 
 
