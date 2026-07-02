@@ -218,9 +218,9 @@ tabla_traza = imprimir_tabla_johansen(
 # Johansen.
 VECM_escenario2 = VECM(
     ,
-    k_ar_diff=k_ar_diff,
+    k_ar_diff= ,
     coint_rank= ,
-    deterministic="n",
+    deterministic= ,
 )
 
 # Estimación del modelo VEC 
